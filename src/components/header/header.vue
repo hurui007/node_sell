@@ -51,7 +51,7 @@
           <div class="title">
             <div class="line"></div>
             <div class="text">商家公告</div>
-            <div  class="line"></div>
+            <div class="line"></div>
           </div>
           <div class="bulletin">
             <p class="content">{{seller.bulletin}}</p>
