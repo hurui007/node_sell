@@ -39,12 +39,14 @@
           </li>
         </ul>
       </div>
+      <shopcart v-bind:delivery-price="seller.deliveryPrice" v-bind:min-price="seller.minPrice"></shopcart>
     </div>
 </template>
 
 <script>
 
   import BScroll from 'better-scroll'
+  import shopcart from './../../components/shopcart/shopcart'
 
   const ERR_OK = 0
   export default {
@@ -123,12 +125,16 @@
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300)
       }
+    },
+    components: {
+      shopcart
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
+  @import "../../common/stylus/font-awesome.css";
   .goods
     display: flex
     position: absolute

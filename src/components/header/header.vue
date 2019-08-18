@@ -59,7 +59,7 @@
         </div>
       </div>
       <div class="detail-close" @click="hideDetail">
-        <i class="icon-close">X</i>
+        <i class="fa fa-times"></i>
       </div>
     </div>
   </div>
@@ -103,6 +103,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
   /*@import "../../common/stylus/icon.styl";*/
+  @import "../../common/stylus/font-awesome.css";
   .header
     position: relative
     color: #fff

@@ -20,7 +20,7 @@
       </div>
     </div>
     <!-- 当路由改变的时候，替换的内容就是在合格view -->
-    <router-view></router-view>
+    <router-view v-bind:seller="seller"></router-view>
   </div>
 </template>
 
