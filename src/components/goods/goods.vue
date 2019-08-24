@@ -33,21 +33,24 @@
                   <div class="price">
                     <span class="now">{{food.price}}</span><span class="old" v-show="food.oldPrice">{{food.oldPrice}}</span>
                   </div>
+                  <div class="cartcontrol-wrapper">
+                    <cartcontrol v-bind:food="food"></cartcontrol>
+                  </div>
                 </div>
               </li>
             </ul>
           </li>
         </ul>
       </div>
-      <shopcart v-bind:delivery-price="seller.deliveryPrice" v-bind:min-price="seller.minPrice"></shopcart>
+      <shop-cart ref="shopcart" v-on:cart-addd="_drop" v-bind:select-foods="selectFoods" v-bind:delivery-price="seller.deliveryPrice" v-bind:min-price="seller.minPrice"></shop-cart>
     </div>
 </template>
 
 <script>
 
   import BScroll from 'better-scroll'
-  import shopcart from './../../components/shopcart/shopcart'
-
+  import shopCart from './../../components/shopcart/shopcart'
+  import cartcontrol from './../../components/cartcontrol/cartcontrol'
   const ERR_OK = 0
   export default {
     name: 'goods',
@@ -74,6 +77,18 @@
           }
         }
         return 0
+      },
+      selectFoods() {
+        let foods = []
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              console.info('一旦food的这个属性发生了变化，就会被检测到')
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
     created () {
@@ -98,7 +113,8 @@
           click: true // 可以添加点击效果
         })
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
-          probeType: 3
+          probeType: 3,
+          click: true
         })
         this.foodsScroll.on('scroll', (pos) => {
           this.scrollY = Math.abs(Math.round(pos.y))
@@ -124,10 +140,21 @@
         let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300)
+      },
+      _drop(target) {
+        console.info('goods drop')
+        this.$refs.shopcart.drop(target)
       }
     },
     components: {
-      shopcart
+      shopCart,
+      cartcontrol
+    },
+    events: {
+      'cart-add'(target) {
+        console.info(target)
+        this._drop(target)
+      }
     }
   }
 </script>
@@ -238,4 +265,8 @@
               text-decoration: line-through
               font-size: 10px
               color: rgb(147,153,159)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 12px
 </style>

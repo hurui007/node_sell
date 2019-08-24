@@ -14,6 +14,15 @@
         <div class="content-right">
           <div class="pay" v-bind:class="payClass">{{payDesc}}</div>
         </div>
+        <div class="ball-container">
+          <transition-group name="drop">
+            <!--eslint-disable-next-line-->
+            <div  class="ball" v-for="(ball, index) in balls" v-show="ball.show" v-bind:key="index">
+              <div class="inner"></div>
+            </div>
+          </transition-group>
+
+        </div>
     </div>
   </div>
 </template>
@@ -21,14 +30,34 @@
 <script>
   export default {
     name: 'showcart',
+    data() {
+     return {
+       balls: [
+         {
+           show: false
+         },
+         {
+           show: false
+         },
+         {
+           show: false
+         },
+         {
+           show: false
+         },
+         {
+           show: false
+         }
+       ],
+       dropBall: []
+     }
+    },
     props: {
       selectFoods: {
         type: Array,
         default() {
           return [
             {
-              price: 10,
-              count: 1
             }
           ]
         }
@@ -59,7 +88,7 @@
       },
       payDesc () {
         if (this.totalPrice === 0) {
-          return `${this.minPrice}}`
+          return `还差${this.minPrice}元起送`
         } else if (this.totalPrice < this.minPrice) {
           let diff = this.minPrice - this.totalPrice
           return `还差${diff}元起送`
@@ -72,6 +101,21 @@
           return 'not-enouth'
         } else {
           return 'enough'
+        }
+      }
+    },
+    methods: {
+      drop (el) {
+        console.info('1221')
+        console.info(el)
+        for (let i = 0; i < this.balls.length; i++) {
+          let ball = this.balls[i]
+          if (!ball.show) {
+            ball.show = true
+            ball.el = el
+            this.dropBall.push(ball)
+            return
+          }
         }
       }
     }
@@ -168,4 +212,17 @@
           &.enough
             background: #00b43c
             color: #fff
+    .ball-container
+      .ball
+        position : fixed
+        left: 32px
+        bottom: 22px
+        z-index: 200
+        transition: all 0.4s
+        .inner
+          width: 16px
+          height: 16px
+          border-radius: 50%
+          background: rgb(0,160,220)
+          transition: all 0.4
 </style>
