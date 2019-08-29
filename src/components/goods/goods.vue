@@ -47,7 +47,6 @@
 </template>
 
 <script>
-
   import BScroll from 'better-scroll'
   import shopCart from './../../components/shopcart/shopcart'
   import cartcontrol from './../../components/cartcontrol/cartcontrol'

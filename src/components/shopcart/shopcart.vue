@@ -2,7 +2,7 @@
     <div class="shopcart">
       <div class="content">
         <div class="content-left">
-          <div class="logo-wrapper">
+          <div class="logo-wrapper" v-on:click="togglelist">
             <div class="logo" v-bind:class="{'highlight':totalCount>0}">
               <i class="cart-icon fa fa-cart-plus" v-bind:class="{'highlight':totalCount>0}"></i>
             </div>
@@ -15,21 +15,42 @@
           <div class="pay" v-bind:class="payClass">{{payDesc}}</div>
         </div>
         <div class="ball-container">
-          <transition-group name="drop">
             <!--eslint-disable-next-line-->
             <div  class="ball" v-for="(ball, index) in balls" v-show="ball.show" v-bind:key="index">
               <div class="inner"></div>
             </div>
-          </transition-group>
-
+        </div>
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty">清空</span>
+          </div>
+          <div class="list-content"  ref="listContent">
+            <ul>
+              <!--eslint-disable-next-line-->
+              <li class="food" v-for="food in selectFoods">
+                <span class="name">{{food.name}}</span>
+                <div class="price">
+                  <span>{{food.price*food.count}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol v-bind:food="food"></cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
     </div>
   </div>
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
+  import cartcontrol from '../cartcontrol/cartcontrol'
+
   export default {
     name: 'showcart',
+    components: {cartcontrol},
     data() {
      return {
        balls: [
@@ -49,6 +70,7 @@
            show: false
          }
        ],
+       fold: true,
        dropBall: []
      }
     },
@@ -102,6 +124,29 @@
         } else {
           return 'enough'
         }
+      },
+      listShow() {
+        if (!this.totalCount) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.fold = true
+          return false
+        }
+        let show = !this.fold
+        // 列表需要展开时，才需要加载滚动条
+        if (show) {
+          this.$nextTick(() => {
+            // 当滚动条不存在时，才需要创建，否则只需要刷新就可以
+            if (!this.scroll) {
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.scroll = new BScroll(this.$refs.listContent, {
+                click: true
+              })
+            } else {
+              this.scroll.refresh()
+            }
+          })
+        }
+        return show
       }
     },
     methods: {
@@ -117,6 +162,12 @@
             return
           }
         }
+      },
+      togglelist () {
+        if (!this.totalCount) {
+          return
+        }
+        this.fold = !this.fold
       }
     }
   }
@@ -124,6 +175,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/font-awesome.css";
+  @import "../../common/stylus/mixin.styl"
   .shopcart
     position: fixed
     left:0
@@ -218,11 +270,60 @@
         left: 32px
         bottom: 22px
         z-index: 200
-        transition: all 0.4s
         .inner
           width: 16px
           height: 16px
           border-radius: 50%
           background: rgb(0,160,220)
           transition: all 0.4
+    .shopcart-list
+      position: absolute
+      left: 0
+      bottom: 48px
+      z-index: -1
+      width: 100%
+      background: #fff
+    .list-header
+      height: 40px;
+      line-height: 40px;
+      padding: 0 18px;
+      background: #f3f5f7;
+      border-bottom: 1px solid rgba(7,17,27,0.4)
+      .title
+        float: left
+        font-size: 14px
+        color: rgb(7,17,27)
+        line-height: 36px
+        margin: 0 10px
+      .empty
+        float: right
+        font-size: 14px
+        color: rgb(7,17,27)
+        line-height: 36px;
+        margin: 0px 10px;
+    .list-content
+      max-height: 217px;
+      padding: 0 18px;
+      overflow: hidden;
+      background: #fff;
+      .food
+        position: relative
+        padding: 12px 0;
+        box-sizing: border-box;
+        border-bottom: 1px solid rgba(7,17,27,0.4)
+        .name
+          font-size: 14px
+          line-height: 24px;
+          color: rgb(7,17,27)
+        .price
+          position: absolute;
+          font-size: 14px;
+          bottom: 12px;
+          right: 120px;
+          font-weight: 700;
+          color: rgb(240,20,20)
+        .cartcontrol-wrapper
+          position: absolute;
+          bottom: 0px;
+          right: 0;
 </style>
