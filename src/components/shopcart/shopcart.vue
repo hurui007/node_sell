@@ -1,4 +1,5 @@
 <template>
+  <div>
     <div class="shopcart">
       <div class="content">
         <div class="content-left">
@@ -11,7 +12,7 @@
           <div class="price" v-bind:class="{'highlight':totalCount>0}" >{{totalPrice}}元</div>
           <div class="desc">另需要配送费{{deliveryPrice}}元</div>
         </div>
-        <div class="content-right">
+        <div class="content-right" v-on:click="pay">
           <div class="pay" v-bind:class="payClass">{{payDesc}}</div>
         </div>
         <div class="ball-container">
@@ -23,7 +24,7 @@
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-            <span class="empty">清空</span>
+            <span class="empty" v-on:click="empty">清空</span>
           </div>
           <div class="list-content"  ref="listContent">
             <ul>
@@ -41,6 +42,10 @@
           </div>
         </div>
     </div>
+  </div>
+    <transition name="move">
+    <div class="list-mask" v-show="listShow" v-on:click="hidelist"></div>
+    </transition>
   </div>
 </template>
 
@@ -168,6 +173,20 @@
           return
         }
         this.fold = !this.fold
+      },
+      empty () {
+        this.selectFoods.forEach((food) => {
+          food.count = 0
+        })
+      },
+      hidelist () {
+        this.fold = true
+      },
+      pay () {
+        if (this.totalPrice < this.minPrice) {
+          return
+        }
+        window.alert(`支付${this.totalPrice}元`)
       }
     }
   }
@@ -182,6 +201,7 @@
     bottom:0
     width:100%
     height: 48px
+    z-index: 50
     /*background: #000*/
     .content
       display: flex
@@ -326,4 +346,21 @@
           position: absolute;
           bottom: 0px;
           right: 0;
+  .list-mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: 40
+    backdrop-filter: blur(10px)
+    opacity: 1
+    background: rgba(7,17,27,0.6)
+    &.move-enter-active,&.move-leave-active
+      transition: all 0.5s
+      opacity: 1
+      background: rgba(7,17,27,0.6)
+    &.move-enter,&.move-leave-to
+      opacity: 0
+      background: rgba(7,17,27,0)
 </style>
