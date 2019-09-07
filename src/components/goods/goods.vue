@@ -21,11 +21,11 @@
             <ul>
               <!--eslint-disable-next-line-->
               <li v-for="food in item.foods" class="food-item border-1px">
-                <div class="icon">
+                <div class="icon" v-on:click="selectFood(food,$event)">
                   <img v-bind:src="food.icon">
                 </div>
                 <div class="content">
-                  <h2 class="name">{{food.name}}</h2>
+                  <h2 v-on:click="selectFood(food,$event)" class="name">{{food.name}}</h2>
                   <p class="desc">{{food.description}}</p>
                   <div class="extra">
                     <span class="count">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}</span>
@@ -43,6 +43,7 @@
         </ul>
       </div>
       <shop-cart ref="shopcart" v-on:cart-addd="_drop" v-bind:select-foods="selectFoods" v-bind:delivery-price="seller.deliveryPrice" v-bind:min-price="seller.minPrice"></shop-cart>
+      <food v-bind:food="selectedFood" ref="food"></food>
     </div>
 </template>
 
@@ -50,6 +51,7 @@
   import BScroll from 'better-scroll'
   import shopCart from './../../components/shopcart/shopcart'
   import cartcontrol from './../../components/cartcontrol/cartcontrol'
+  import food from './../../components/food/food'
   const ERR_OK = 0
   export default {
     name: 'goods',
@@ -62,7 +64,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       }
     },
     computed: {
@@ -143,11 +146,20 @@
       _drop(target) {
         console.info('goods drop')
         this.$refs.shopcart.drop(target)
+      },
+      selectFood (food, enent) {
+        if (!event._constructed) {
+          return
+        }
+        this.selectedFood = food
+        console.info('调用子组件的方法')
+        this.$refs.food.show()
       }
     },
     components: {
       shopCart,
-      cartcontrol
+      cartcontrol,
+      food
     },
     events: {
       'cart-add'(target) {
